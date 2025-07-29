@@ -101,6 +101,7 @@ const MobiFoneManagement = () => {
   // }, []);
 
   // Initialize map
+  /*  
   useEffect(() => {
     if (selectedStation && mapInstanceRef.current) {
       // Find the marker for selected station
@@ -232,7 +233,143 @@ const MobiFoneManagement = () => {
     // })
     // .catch((error) => console.error(error));
     if (!mapRef.current) return;
+  }, []);*/
+
+
+
+  const getMarkerIcon = () => {
+    return window.L.divIcon({
+      html: `
+      <div style="
+        width: 24px;
+        height: 24px;
+        background: #059669; /* xanh lá */
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        position: relative;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      ">
+        <div style="
+          width: 8px;
+          height: 8px;
+          background: white;
+          border-radius: 50%;
+          position: absolute;
+          top: 7px;
+          left: 7px;
+          transform: rotate(45deg);
+        "></div>
+      </div>
+    `,
+      className: '',
+      iconSize: [24, 24],
+      iconAnchor: [12, 24],
+      popupAnchor: [0, -24],
+    });
+  };
+
+
+const rangeLevels = [
+  { radius: 1.0, color: 'rgba(0, 255, 0, 0.4)' },
+  { radius: 0.7, color: 'rgba(0, 255, 0, 0.3)' },
+  { radius: 0.4, color: 'rgba(0, 255, 0, 0.2)' },
+];
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const script = document.createElement("script");
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+
+    script.onload = async () => {
+      if (!window.L || mapInstanceRef.current) return;
+
+      const map = window.L.map(mapRef.current).setView([16.0, 108.0], 6);
+      window.L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+          attribution: "© OpenStreetMap contributors",
+        }
+      ).addTo(map);
+      mapInstanceRef.current = map;
+
+      try {
+        const response = await axios.get("http://localhost:8080/api/towers");
+
+        const baseStations = response.data.map((item) => ({
+          id: item.id,
+          name: item.name || `Cell ${item.cell}`,
+          mcc: item.mcc,
+          mnc: item.mnc,
+          area: item.area,
+          cell: item.cell,
+          net: item.net,
+          range: item.range,
+          samples: item.samples,
+          status: item.status || 'ONLINE', // fallback nếu không có
+          signal: item.averageSignal ?? 'N/A',
+          type: item.radio || 'Unknown',
+          coordinates: [item.lat, item.lon],
+          location: `Lat: ${item.lat}, Lon: ${item.lon}`,
+          technician: item.technician || 'Chưa rõ',
+          phone: item.phone || '',
+          avatar: '/api/placeholder/40/40',
+        }));
+
+        baseStations.forEach((station) => {
+          const marker = window.L.marker(station.coordinates, {
+            icon: getMarkerIcon(station.status, station.type),
+          }).addTo(map);
+
+          const popupContent = `
+          <div style="min-width:220px">
+            <h3 style="font-weight:bold; margin-bottom:6px;">Trạm phát sóng #${station.id}</h3>
+            <div style="font-size:13px; line-height:1.6">
+              <div><strong>Radio:</strong> ${station.radio || 'Không rõ'}</div>
+              <div><strong>MCC-MNC:</strong> ${station.mcc}-${station.mnc}</div>
+              <div><strong>Net:</strong> ${station.net}</div>
+              <div><strong>Area:</strong> ${station.area}</div>
+              <div><strong>Cell ID:</strong> ${station.cell}</div>
+              <div><strong>Unit:</strong> ${station.unit}</div>
+              <div><strong>Range phủ sóng:</strong> ${station.range} m</div>
+              <div><strong>Toạ độ:</strong> ${station.coordinates}</div>
+            </div>
+          </div>`;
+
+          marker.bindPopup(popupContent);
+
+          marker.on("click", () => {
+            setSelectedStation(station);
+          });
+
+          
+          markersRef.current.push({ marker, station });
+
+        });
+
+        
+
+        setSidebarOpen(true);
+      } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+      }
+    };
+
+    document.head.appendChild(script);
+
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+      markersRef.current = [];
+    };
   }, []);
+
+
+
+
 
   const performanceData = [
     { month: "T1", value: 85 },
@@ -295,9 +432,8 @@ const MobiFoneManagement = () => {
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div
-        className={`${
-          sidebarOpen ? "w-80" : "w-0"
-        } bg-white shadow-lg flex flex-col transition-all duration-300 overflow-hidden`}
+        className={`${sidebarOpen ? "w-80" : "w-0"
+          } bg-white shadow-lg flex flex-col transition-all duration-300 overflow-hidden`}
       >
         {sidebarOpen && <SearchTownForm />}
       </div>
@@ -309,7 +445,7 @@ const MobiFoneManagement = () => {
       >
         {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
       </button>{" "}
-     
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col transition-all duration-300">
         {/* Map Area */}
