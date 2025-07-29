@@ -1,12 +1,17 @@
-import React from 'react';
-import MobiFoneManagement from './ShareInsight';
-import './index.css';
-import BaseStationMap from './BaseStationMap';
-import 'leaflet/dist/leaflet.css';
-
+import React from "react";
+import MobiFoneManagement from "./MobiFoneManagement";
+import "./index.css";
+import SidebarMenu from "./SideBarMenu";
 
 function App() {
-  return <BaseStationMap />;
+  return (
+    <div className="flex h-screen">
+      <SidebarMenu />
+      <div className="flex-1 overflow-auto">
+        <MobiFoneManagement />
+      </div>
+    </div>
+  );
 }
 
 export default App;
