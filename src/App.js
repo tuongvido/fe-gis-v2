@@ -1,16 +1,20 @@
-import React from "react";
-import MobiFoneManagement from "./MobiFoneManagement";
-import "./index.css";
-import SidebarMenu from "./SideBarMenu";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import LoginPage from "./LoginPage";
+import HomePage from "./pages/HomePage";
+import StationsPage from "./pages/StationsPage";
+import StatsPage from "./pages/StatsPage";
 
 function App() {
   return (
-    <div className="flex h-screen">
-      <SidebarMenu />
-      <div className="flex-1 overflow-auto">
-        <MobiFoneManagement />
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/stations" element={<StationsPage />} />
+        <Route path="/stats" element={<StatsPage />} />
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </Router>
   );
 }
 
