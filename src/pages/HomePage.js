@@ -30,7 +30,7 @@ const HomePage = () => {
     axios
       .get("http://localhost:8080/api/towers")
       .then((res) => {
-        const stations = res.data.slice(0, 100).map((item) => ({
+        const stations = res.data.slice(0, 200).map((item) => ({
           id: item.id,
           name: item.name || `Cell ${item.cell}`,
           mcc: item.mcc,
@@ -119,7 +119,51 @@ const HomePage = () => {
               }
             };
 
+            const generateGradientCircles = (center, baseColor = "#3f51b5", range = 400, steps = 6, maxOpacity = 0.1) => {
+              const circles = [];
+
+              for (let i = 1; i <= steps; i++) {
+                circles.push({
+                  center,
+                  radius: (range / steps) * i,
+                  fillColor: baseColor,
+                  fillOpacity: maxOpacity * (1 - (i - 1) / steps),
+                });
+              }
+
+              return circles;
+            };
+
+
             const baseColor = "#00ff59a6";
+
+            const circles = [
+              { radius: 0.2, color: 'rgba(145, 190, 238, 0.5)' },
+              { radius: 0.5, color: 'rgba(145, 190, 238, 0.5)' },
+              { radius: 0.8, color: 'rgba(145, 190, 238, 0.5)' },
+              { radius: 1, color: 'rgba(145, 190, 238, 0.5)' },
+            ];
+
+            stations.forEach((station) => {
+              // Vẽ marker
+              window.L.marker(station.coordinates, {
+                icon: createMarkerIcon(station.status),
+              }).addTo(map);
+
+              // Vẽ các circle gradient
+              circles.forEach((c) => {
+                window.L.circle(station.coordinates, {
+                  radius: station.range * c.radius,
+                  color: 'transparent',
+                  fillColor: c.color,
+                  fillOpacity: 1,
+                  stroke: false,
+                  interactive: false,
+                }).addTo(map);
+              });
+            });
+
+
 
             // Add markers for all base stations
             stations.forEach((station) => {
@@ -127,8 +171,20 @@ const HomePage = () => {
                 icon: greenIcon,
               }).addTo(map);
 
+
+              circles.forEach((c) => {
+                window.L.circle(station.coordinates, {
+                  radius: station.range * c.radius,
+                  color: 'transparent',
+                  fillColor: c.color,
+                  fillOpacity: 1,
+                  stroke: false,
+                  interactive: false,
+                }).addTo(map);
+              });
+
               // Vẽ vùng phủ sóng
-              drawGradientCoverage(map, station.coordinates, baseColor, station.range || 1000);
+              // drawGradientCoverage(map, station.coordinates, baseColor, station.range || 1000);
 
               // // Add popup with station info
               // const popupContent = `
@@ -220,9 +276,8 @@ const HomePage = () => {
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div
-        className={`${
-          sidebarOpen ? "w-80" : "w-0"
-        } bg-white shadow-lg flex flex-col transition-all duration-300 overflow-hidden`}
+        className={`${sidebarOpen ? "w-80" : "w-0"
+          } bg-white shadow-lg flex flex-col transition-all duration-300 overflow-hidden`}
       >
         {sidebarOpen && <SearchTownForm />}
       </div>
