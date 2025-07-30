@@ -4,9 +4,9 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { baseStations } from "../constants/constants.js";
 import SearchTownForm from "../components/SearchTownForm.js";
 import StationInfoPanel from "../components/StationInfoPanel.js";
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import greenMarkerIcon from '@vectorial1024/leaflet-color-markers/img/marker-icon-2x-green.png';
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import greenMarkerIcon from "@vectorial1024/leaflet-color-markers/img/marker-icon-2x-green.png";
 
 const HomePage = () => {
   const [selectedStation, setSelectedStation] = useState(null);
@@ -27,147 +27,164 @@ const HomePage = () => {
         stationMarker.marker.openPopup();
       }
     }
-    // axios
-    //   .get("http://localhost:8080/api/towers")
-    //   .then((response) => {
-    // const baseStations = response.data;
+    axios
+      .get("http://localhost:8080/api/towers")
+      .then((res) => {
+        const stations = res.data.slice(0, 100).map((item) => ({
+          id: item.id,
+          name: item.name || `Cell ${item.cell}`,
+          mcc: item.mcc,
+          mnc: item.mnc,
+          area: item.area,
+          cell: item.cell,
+          net: item.net,
+          range: item.range,
+          samples: item.samples,
+          status: item.status || "ONLINE", // fallback nếu không có
+          signal: item.averageSignal ?? "N/A",
+          type: item.radio || "Unknown",
+          coordinates: [item.lat, item.lon],
+          location: `Lat: ${item.lat}, Lon: ${item.lon}`,
+          technician: item.technician || "Chưa rõ",
+          phone: item.phone || "",
+        }));
+        console.log(stations)
+        // Load Leaflet JS
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+        script.onload = () => {
+          if (window.L && !mapInstanceRef.current) {
+            // Initialize map centered on Ho Chi Minh
+            const map = window.L.map(mapRef.current).setView([10.781102809656424, 106.73803249581731], 13);
 
-    // Load Leaflet JS
-    const script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
-    script.onload = () => {
-      if (window.L && !mapInstanceRef.current) {
-        // Initialize map centered on Ho Chi Minh
-        const map = window.L.map(mapRef.current).setView([10.781102809656424, 106.73803249581731], 13);
+            // Add OpenStreetMap tiles
+            window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              attribution: "© OpenStreetMap contributors",
+            }).addTo(map);
 
-        // Add OpenStreetMap tiles
-        window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "© OpenStreetMap contributors",
-        }).addTo(map);
+            // Hàm lấy màu theo trạng thái
+            const getStatusColor = (status) => {
+              switch (status) {
+                case "ONLINE":
+                  return "#10b981";
+                case "OFFLINE":
+                  return "#ef4444";
+                case "MAINTENANCE":
+                  return "#f59e0b";
+                default:
+                  return "#6b7280";
+              }
+            };
 
-        // Hàm lấy màu theo trạng thái
-        const getStatusColor = (status) => {
-          switch (status) {
-            case "ONLINE":
-              return "#10b981";
-            case "OFFLINE":
-              return "#ef4444";
-            case "MAINTENANCE":
-              return "#f59e0b";
-            default:
-              return "#6b7280";
-          }
-        };
-
-        // Hàm tạo icon marker tuỳ theo trạng thái
-        const createMarkerIcon = (status) => {
-          const color = getStatusColor(status);
-          const size = map.getZoom() / 1.5;
-          return window.L.divIcon({
-            html: `<div style="
+            // Hàm tạo icon marker tuỳ theo trạng thái
+            const createMarkerIcon = (status) => {
+              const color = getStatusColor(status);
+              const size = map.getZoom() / 1.5;
+              return window.L.divIcon({
+                html: `<div style="
           background-color: ${color};
           width: ${size}px;
           height: ${size}px;
           border-radius: 50%;
           border: 1px solid white;
         "></div>`,
-            className: "custom-marker",
-            iconSize: [size, size],
-            iconAnchor: [(size + 6) / 2, (size + 6) / 2],
-          });
-        };
+                className: "custom-marker",
+                iconSize: [size, size],
+                iconAnchor: [(size + 6) / 2, (size + 6) / 2],
+              });
+            };
 
-        const greenIcon = new L.Icon({
-          iconUrl: greenMarkerIcon,
-          shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
-        });
+            const greenIcon = new L.Icon({
+              iconUrl: greenMarkerIcon,
+              shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41],
+            });
 
-        // Hàm vẽ nhiều vòng tròn đồng tâm để mô phỏng vùng phủ sóng nhạt dần
-        const drawGradientCoverage = (map, center, baseColor, range = 400) => {
-          const steps = 6;
-          const maxOpacity = 0.5;
+            // Hàm vẽ nhiều vòng tròn đồng tâm để mô phỏng vùng phủ sóng nhạt dần
+            const drawGradientCoverage = (map, center, baseColor, range = 400) => {
+              const steps = 6;
+              const maxOpacity = 0.1;
 
-          for (let i = 1; i <= steps; i++) {
-            window.L.circle(center, {
-              radius: (range / steps) * i,
-              color: "transparent",
-              fillColor: baseColor,
-              fillOpacity: maxOpacity * (1 - (i - 1) / steps),
-              interactive: false,
-            }).addTo(map);
+              for (let i = 1; i <= steps; i++) {
+                window.L.circle(center, {
+                  radius: (range / steps) * i,
+                  color: "transparent",
+                  fillColor: baseColor,
+                  fillOpacity: maxOpacity * (1 - (i - 1) / steps),
+                  interactive: false,
+                }).addTo(map);
+              }
+            };
+
+            const baseColor = "#00ff59a6";
+
+            // Add markers for all base stations
+            stations.forEach((station) => {
+              const marker = window.L.marker(station.coordinates, {
+                icon: greenIcon,
+              }).addTo(map);
+
+              // Vẽ vùng phủ sóng
+              drawGradientCoverage(map, station.coordinates, baseColor, station.range || 1000);
+
+              // // Add popup with station info
+              // const popupContent = `
+              //   <div class="p-3 min-w-[200px]">
+              //     <h3 class="font-bold text-lg mb-2">${station.name}</h3>
+              //     <div class="space-y-1 text-sm">
+              //       <div><strong>Kỹ thuật viên:</strong> ${station.technician}</div>
+              //       <div><strong>Trạng thái:</strong>
+              //         <span class="px-2 py-1 rounded text-xs font-medium ${
+              //           station.status === "ONLINE"
+              //             ? "bg-green-100 text-green-800"
+              //             : station.status === "OFFLINE"
+              //             ? "bg-red-100 text-red-800"
+              //             : "bg-yellow-100 text-yellow-800"
+              //         }">${station.status}</span>
+              //       </div>
+              //       <div><strong>Tín hiệu:</strong> ${station.signal}%</div>
+              //       <div><strong>Loại:</strong> ${station.type}</div>
+              //       <div><strong>Vị trí:</strong> ${station.location}</div>
+              //     </div>
+              //   </div>
+              // `;
+
+              // marker.bindPopup(popupContent);
+
+              // Handle marker click
+              marker.on("click", () => {
+                setSelectedStation(station);
+              });
+
+              markersRef.current.push({ marker, station });
+            });
+
+            map.on("zoomend", () => {
+              const newZoom = map.getZoom();
+              markersRef.current.forEach(({ marker, station }) => {
+                const newIcon = greenIcon;
+                marker.setIcon(newIcon);
+              });
+            });
+
+            mapInstanceRef.current = map;
           }
+          setSidebarOpen(true);
         };
+        document.head.appendChild(script);
 
-        const baseColor = "#00ff59a6";
-
-        // Add markers for all base stations
-        baseStations.forEach((station) => {
-          const marker = window.L.marker(station.coordinates, {
-            icon: greenIcon,
-          }).addTo(map);
-
-          // Vẽ vùng phủ sóng
-          drawGradientCoverage(map, station.coordinates, baseColor, station.range || 1000);
-
-          // // Add popup with station info
-          // const popupContent = `
-          //   <div class="p-3 min-w-[200px]">
-          //     <h3 class="font-bold text-lg mb-2">${station.name}</h3>
-          //     <div class="space-y-1 text-sm">
-          //       <div><strong>Kỹ thuật viên:</strong> ${station.technician}</div>
-          //       <div><strong>Trạng thái:</strong>
-          //         <span class="px-2 py-1 rounded text-xs font-medium ${
-          //           station.status === "ONLINE"
-          //             ? "bg-green-100 text-green-800"
-          //             : station.status === "OFFLINE"
-          //             ? "bg-red-100 text-red-800"
-          //             : "bg-yellow-100 text-yellow-800"
-          //         }">${station.status}</span>
-          //       </div>
-          //       <div><strong>Tín hiệu:</strong> ${station.signal}%</div>
-          //       <div><strong>Loại:</strong> ${station.type}</div>
-          //       <div><strong>Vị trí:</strong> ${station.location}</div>
-          //     </div>
-          //   </div>
-          // `;
-
-          // marker.bindPopup(popupContent);
-
-          // Handle marker click
-          marker.on("click", () => {
-            setSelectedStation(station);
-          });
-
-          markersRef.current.push({ marker, station });
-        });
-
-        map.on("zoomend", () => {
-          const newZoom = map.getZoom();
-          markersRef.current.forEach(({ marker, station }) => {
-            const newIcon = greenIcon;
-            marker.setIcon(newIcon);
-          });
-        });
-
-        mapInstanceRef.current = map;
-      }
-      setSidebarOpen(true);
-    };
-    document.head.appendChild(script);
-
-    return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
-      markersRef.current = [];
-    };
-    // })
-    // .catch((error) => console.error(error));
+        return () => {
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.remove();
+            mapInstanceRef.current = null;
+          }
+          markersRef.current = [];
+        };
+      })
+      .catch((error) => console.error(error));
     if (!mapRef.current) return;
   }, []);
 

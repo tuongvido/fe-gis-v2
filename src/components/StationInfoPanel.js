@@ -137,6 +137,19 @@ const StationInfoPanel = ({ station, onClose }) => {
             <span className="font-medium text-right">{station.location}</span>
           )}
         </div>
+        <div className="flex justify-between">
+          <span>Range:</span>
+          {isEditing ? (
+            <input
+              type="number"
+              className="border px-2 rounded w-1/2"
+              value={formData.range}
+              onChange={(e) => handleChange("range", e.target.value)}
+            />
+          ) : (
+            <span className="font-medium">{station.range} m</span>
+          )}
+        </div>
       </div>
 
       {!isEditing && (
