@@ -46,7 +46,6 @@ const HomePage = () => {
           type: item.radio || "Unknown",
           coordinates: [item.lat, item.lon],
           location: `Lat: ${item.lat}, Lon: ${item.lon}`,
-          technician: item.technician || "Chưa rõ",
           phone: item.phone || "",
         }));
         console.log(stations)
@@ -118,17 +117,17 @@ const HomePage = () => {
                 icon: createMarkerIcon(station.status),
               }).addTo(map);
 
-              // Vẽ các circle gradient
-              circles.forEach((c) => {
-                window.L.circle(station.coordinates, {
-                  radius: station.range * c.radius,
-                  color: 'transparent',
-                  fillColor: c.color,
-                  fillOpacity: 1,
-                  stroke: false,
-                  interactive: false,
-                }).addTo(map);
-              });
+              // // Vẽ các circle gradient
+              // circles.forEach((c) => {
+              //   window.L.circle(station.coordinates, {
+              //     radius: station.range * c.radius,
+              //     color: 'transparent',
+              //     fillColor: c.color,
+              //     fillOpacity: 1,
+              //     stroke: false,
+              //     interactive: false,
+              //   }).addTo(map);
+              // });
             });
 
 

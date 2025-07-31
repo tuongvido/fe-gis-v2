@@ -66,7 +66,8 @@ const StationInfoPanel = ({ station, onClose }) => {
       </div>
 
       <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
+        
+        {/* <div className="flex justify-between">
           <span>Kỹ thuật viên:</span>
           {isEditing ? (
             <input
@@ -77,7 +78,7 @@ const StationInfoPanel = ({ station, onClose }) => {
           ) : (
             <span className="font-medium">{station.technician}</span>
           )}
-        </div>
+        </div> */}
 
         <div className="flex justify-between">
           <span>Trạng thái:</span>
