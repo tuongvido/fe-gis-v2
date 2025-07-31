@@ -7,6 +7,7 @@ import StationInfoPanel from "../components/StationInfoPanel.js";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import greenMarkerIcon from "@vectorial1024/leaflet-color-markers/img/marker-icon-2x-green.png";
+import { getStatusColor } from "../utils/Utils.js";
 
 const HomePage = () => {
   const [selectedStation, setSelectedStation] = useState(null);
@@ -62,20 +63,6 @@ const HomePage = () => {
               attribution: "© OpenStreetMap contributors",
             }).addTo(map);
 
-            // Hàm lấy màu theo trạng thái
-            const getStatusColor = (status) => {
-              switch (status) {
-                case "ONLINE":
-                  return "#10b981";
-                case "OFFLINE":
-                  return "#ef4444";
-                case "MAINTENANCE":
-                  return "#f59e0b";
-                default:
-                  return "#6b7280";
-              }
-            };
-
             // Hàm tạo icon marker tuỳ theo trạng thái
             const createMarkerIcon = (status) => {
               const color = getStatusColor(status);
@@ -103,22 +90,6 @@ const HomePage = () => {
               shadowSize: [41, 41],
             });
 
-            // Hàm vẽ nhiều vòng tròn đồng tâm để mô phỏng vùng phủ sóng nhạt dần
-            const drawGradientCoverage = (map, center, baseColor, range = 400) => {
-              const steps = 6;
-              const maxOpacity = 0.1;
-
-              for (let i = 1; i <= steps; i++) {
-                window.L.circle(center, {
-                  radius: (range / steps) * i,
-                  color: "transparent",
-                  fillColor: baseColor,
-                  fillOpacity: maxOpacity * (1 - (i - 1) / steps),
-                  interactive: false,
-                }).addTo(map);
-              }
-            };
-
             const generateGradientCircles = (center, baseColor = "#3f51b5", range = 400, steps = 6, maxOpacity = 0.1) => {
               const circles = [];
 
@@ -133,9 +104,6 @@ const HomePage = () => {
 
               return circles;
             };
-
-
-            const baseColor = "#00ff59a6";
 
             const circles = [
               { radius: 0.2, color: 'rgba(145, 190, 238, 0.5)' },
@@ -183,9 +151,6 @@ const HomePage = () => {
                 }).addTo(map);
               });
 
-              // Vẽ vùng phủ sóng
-              // drawGradientCoverage(map, station.coordinates, baseColor, station.range || 1000);
-
               // // Add popup with station info
               // const popupContent = `
               //   <div class="p-3 min-w-[200px]">
@@ -218,14 +183,6 @@ const HomePage = () => {
               markersRef.current.push({ marker, station });
             });
 
-            map.on("zoomend", () => {
-              const newZoom = map.getZoom();
-              markersRef.current.forEach(({ marker, station }) => {
-                const newIcon = greenIcon;
-                marker.setIcon(newIcon);
-              });
-            });
-
             mapInstanceRef.current = map;
           }
           setSidebarOpen(true);
@@ -243,28 +200,6 @@ const HomePage = () => {
       .catch((error) => console.error(error));
     if (!mapRef.current) return;
   }, []);
-
-  const performanceData = [
-    { month: "T1", value: 85 },
-    { month: "T2", value: 88 },
-    { month: "T3", value: 92 },
-    { month: "T4", value: 87 },
-    { month: "T5", value: 90 },
-    { month: "T6", value: 94 },
-  ];
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "ONLINE":
-        return "bg-green-100 text-green-800";
-      case "OFFLINE":
-        return "bg-red-100 text-red-800";
-      case "MAINTENANCE":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
 
   const getSignalColor = (signal) => {
     if (signal >= 90) return "text-green-600";

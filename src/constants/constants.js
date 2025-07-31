@@ -48,7 +48,7 @@ export const baseStations = [
     type: "BTS",
     phone: "0901000004",
     avatar: "/api/placeholder/40/40",
-    coordinates: [10.7850, 106.6932],
+    coordinates: [10.785, 106.6932],
     range: 320,
   },
   {
@@ -100,7 +100,7 @@ export const baseStations = [
     type: "NodeB",
     phone: "0901000008",
     avatar: "/api/placeholder/40/40",
-    coordinates: [10.7620, 106.7092],
+    coordinates: [10.762, 106.7092],
     range: 310,
   },
   {
@@ -204,7 +204,7 @@ export const baseStations = [
     type: "Repeater",
     phone: "0901000016",
     avatar: "/api/placeholder/40/40",
-    coordinates: [10.7760, 106.6650],
+    coordinates: [10.776, 106.665],
     range: 310,
   },
   {
@@ -230,7 +230,7 @@ export const baseStations = [
     type: "NodeB",
     phone: "0901000018",
     avatar: "/api/placeholder/40/40",
-    coordinates: [10.7650, 106.6485],
+    coordinates: [10.765, 106.6485],
     range: 360,
   },
   {
@@ -388,5 +388,573 @@ export const baseStations = [
     avatar: "/api/placeholder/40/40",
     coordinates: [10.7765, 106.6862],
     range: 460,
+  },
+];
+
+export const mockBaseStations = [
+  {
+    name: "Trạm 1",
+    ward: "Phường Tân Định",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 2",
+    ward: "Phường Tân Định",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 3",
+    ward: "Phường Bến Thành",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 4",
+    ward: "Phường Bến Thành",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 5",
+    ward: "Phường Bến Thành",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 6",
+    ward: "Phường Bến Thành",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 7",
+    ward: "Phường Chợ Quán",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 8",
+    ward: "Phường Chợ Quán",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 9",
+    ward: "Phường Chợ Quán",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 10",
+    ward: "Phường Chợ Quán",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 11",
+    ward: "Phường Chợ Quán",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 12",
+    ward: "Phường Chợ Lớn",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 13",
+    ward: "Phường Chợ Lớn",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 14",
+    ward: "Phường Chợ Lớn",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 15",
+    ward: "Phường Chợ Lớn",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 16",
+    ward: "Phường Bình Tây",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 17",
+    ward: "Phường Bình Tây",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 18",
+    ward: "Phường Bình Tây",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 19",
+    ward: "Phường Bình Tây",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 20",
+    ward: "Phường Bình Tây",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 21",
+    ward: "Phường Phú Lâm",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 22",
+    ward: "Phường Phú Lâm",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 23",
+    ward: "Phường Phú Lâm",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 24",
+    ward: "Phường Phú Lâm",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 25",
+    ward: "Phường Phú Lâm",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 26",
+    ward: "Phường Tân Thuận",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 27",
+    ward: "Phường Tân Thuận",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 28",
+    ward: "Phường Tân Mỹ",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 29",
+    ward: "Phường Tân Mỹ",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 30",
+    ward: "Phường Tân Mỹ",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 31",
+    ward: "Phường Tân Mỹ",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 32",
+    ward: "Phường Tân Mỹ",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 33",
+    ward: "Phường Tân Hưng",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 34",
+    ward: "Phường Tân Hưng",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 35",
+    ward: "Phường Tân Hưng",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 36",
+    ward: "Phường Tân Hưng",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 37",
+    ward: "Phường Tân Hưng",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 38",
+    ward: "Phường Chánh Hưng",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 39",
+    ward: "Phường Chánh Hưng",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 40",
+    ward: "Phường Hiệp Bình Chánh",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 41",
+    ward: "Phường Hiệp Bình Chánh",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 42",
+    ward: "Phường Hiệp Bình Chánh",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 43",
+    ward: "Phường Hiệp Bình Chánh",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 44",
+    ward: "Phường Hiệp Bình Chánh",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 45",
+    ward: "Phường Linh Đông",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 46",
+    ward: "Phường Linh Đông",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 47",
+    ward: "Phường Linh Tây",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 48",
+    ward: "Phường Linh Tây",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 49",
+    ward: "Phường Linh Tây",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 50",
+    ward: "Phường Linh Xuân",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 51",
+    ward: "Phường Linh Xuân",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 52",
+    ward: "Phường Linh Xuân",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 53",
+    ward: "Phường Linh Xuân",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 54",
+    ward: "Phường Linh Xuân",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 55",
+    ward: "Phường Trường Thọ",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 56",
+    ward: "Phường Trường Thọ",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 57",
+    ward: "Phường Trường Thọ",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 58",
+    ward: "Phường Hiệp Phú",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 59",
+    ward: "Phường Hiệp Phú",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 60",
+    ward: "Phường Hiệp Phú",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 61",
+    ward: "Phường Hiệp Phú",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 62",
+    ward: "Phường Hiệp Phú",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 63",
+    ward: "Phường Tăng Nhơn Phú A",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 64",
+    ward: "Phường Tăng Nhơn Phú A",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 65",
+    ward: "Phường Tăng Nhơn Phú A",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 66",
+    ward: "Phường Tăng Nhơn Phú A",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 67",
+    ward: "Phường Tăng Nhơn Phú B",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 68",
+    ward: "Phường Tăng Nhơn Phú B",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 69",
+    ward: "Phường Tăng Nhơn Phú B",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 70",
+    ward: "Phường Tăng Nhơn Phú B",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 71",
+    ward: "Phường Long Thạnh Mỹ",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 72",
+    ward: "Phường Long Thạnh Mỹ",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 73",
+    ward: "Phường Long Thạnh Mỹ",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 74",
+    ward: "Phường Long Thạnh Mỹ",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 75",
+    ward: "Phường Long Thạnh Mỹ",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 76",
+    ward: "Phường Tân Phú",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 77",
+    ward: "Phường Tân Phú",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 78",
+    ward: "Phường Tân Phú",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 79",
+    ward: "Phường Thảo Điền",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 80",
+    ward: "Phường Thảo Điền",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 81",
+    ward: "Phường Thảo Điền",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 82",
+    ward: "Phường Thảo Điền",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 83",
+    ward: "Phường Thảo Điền",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 84",
+    ward: "Phường An Phú",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 85",
+    ward: "Phường An Phú",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 86",
+    ward: "Phường An Phú",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 87",
+    ward: "Phường Bình An",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 88",
+    ward: "Phường Bình An",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 89",
+    ward: "Phường Bình An",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 90",
+    ward: "Phường Bình An",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 91",
+    ward: "Phường Bình Trưng Đông",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 92",
+    ward: "Phường Bình Trưng Đông",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 93",
+    ward: "Phường Bình Trưng Đông",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 94",
+    ward: "Phường Bình Trưng Đông",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 95",
+    ward: "Phường Bình Trưng Tây",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 96",
+    ward: "Phường Bình Trưng Tây",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 97",
+    ward: "Phường Bình Trưng Tây",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 98",
+    ward: "Phường Bình Trưng Tây",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 99",
+    ward: "Phường Cát Lái",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 100",
+    ward: "Phường Cát Lái",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 101",
+    ward: "Phường Thạnh Mỹ Lợi",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 102",
+    ward: "Phường Thạnh Mỹ Lợi",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 103",
+    ward: "Phường Thạnh Mỹ Lợi",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 104",
+    ward: "Phường An Khánh",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 105",
+    ward: "Phường An Khánh",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 106",
+    ward: "Phường An Khánh",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 107",
+    ward: "Phường An Lợi Đông",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 108",
+    ward: "Phường An Lợi Đông",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 109",
+    ward: "Phường An Lợi Đông",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 110",
+    ward: "Phường Thủ Thiêm",
+    status: "MAINTENANCE",
+  },
+  {
+    name: "Trạm 111",
+    ward: "Phường Thủ Thiêm",
+    status: "OFFLINE",
+  },
+  {
+    name: "Trạm 112",
+    ward: "Phường Thủ Thiêm",
+    status: "ONLINE",
+  },
+  {
+    name: "Trạm 113",
+    ward: "Phường Thủ Thiêm",
+    status: "ONLINE",
   },
 ];
