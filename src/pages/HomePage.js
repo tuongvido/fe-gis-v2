@@ -8,6 +8,8 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import greenMarkerIcon from "@vectorial1024/leaflet-color-markers/img/marker-icon-2x-green.png";
 import { getStatusColor } from "../utils/Utils.js";
+import AddStationModal from "../components/AddStationModal";
+
 
 const HomePage = () => {
   const [selectedStation, setSelectedStation] = useState(null);
@@ -15,6 +17,9 @@ const HomePage = () => {
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newStationCoords, setNewStationCoords] = useState(null);
+  const greenIconRef = useRef(null);
 
   // Initialize map
   useEffect(() => {
@@ -183,8 +188,38 @@ const HomePage = () => {
             });
 
             mapInstanceRef.current = map;
+
+            // Sự kiện thêm mới trên bản đồ
+            map.on("click", function (e) {
+              const clickedLatLng = e.latlng;
+
+              const isNearExistingMarker = markersRef.current.some(({ marker }) => {
+                return clickedLatLng.distanceTo(marker.getLatLng()) <= 50;
+              });
+
+              if (isNearExistingMarker) return;
+
+              // Mở modal thêm trạm
+              setNewStationCoords(clickedLatLng);
+              setShowAddModal(true);
+            });
+
+
           }
           setSidebarOpen(true);
+
+          const greenIcon = new L.Icon({
+            iconUrl: greenMarkerIcon,
+            shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41],
+          });
+
+          greenIconRef.current = greenIcon;
+
+
         };
         document.head.appendChild(script);
 
@@ -225,7 +260,7 @@ const HomePage = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col transition-all duration-300">
         {/* Map Area */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative z-0">
           <div ref={mapRef} className="absolute inset-0 w-full h-full" style={{ minHeight: "400px" }} />
 
           {/* Map Controls */}
@@ -253,6 +288,25 @@ const HomePage = () => {
           />
         </div>
       </div>
+      <div >
+          {/*Add station Modal */}
+        <AddStationModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          coordinates={newStationCoords}
+          onSave={(newStation) => {
+            console.log("Dữ liệu trạm mới:", newStation);
+
+            // Ví dụ: thêm marker mới vào bản đồ
+            const marker = L.marker([newStation.lat, newStation.lon], {
+              icon: greenIconRef.current,
+            }).addTo(mapInstanceRef.current);
+            markersRef.current.push({ marker, station: newStation });
+          }}
+        />
+
+      </div>
+
     </div>
   );
 };
