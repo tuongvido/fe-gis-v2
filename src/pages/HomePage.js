@@ -52,6 +52,7 @@ const HomePage = () => {
           coordinates: [item.lat, item.lon],
           location: `Lat: ${item.lat}, Lon: ${item.lon}`,
           phone: item.phone || "",
+          nameDistrict: item.nameDistrict
         }));
         console.log(stations)
         // Load Leaflet JS
@@ -289,7 +290,7 @@ const HomePage = () => {
         </div>
       </div>
       <div >
-          {/*Add station Modal */}
+        {/*Add station */}
         <AddStationModal
           isOpen={showAddModal}
           onClose={() => setShowAddModal(false)}

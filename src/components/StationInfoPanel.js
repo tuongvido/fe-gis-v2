@@ -125,6 +125,18 @@ const StationInfoPanel = ({ station, onClose }) => {
             <span className="font-medium">{station.type}</span>
           )}
         </div>
+          <div className="flex justify-between">
+          <span>Quận:</span>
+          {isEditing ? (
+            <input
+              className="border px-2 rounded w-1/2"
+              value={formData.type}
+              onChange={(e) => handleChange("type", e.target.value)}
+            />
+          ) : (
+            <span className="font-medium">{station.nameDistrict}</span>
+          )}
+        </div>
 
         <div className="flex justify-between">
           <span>Vị trí:</span>
