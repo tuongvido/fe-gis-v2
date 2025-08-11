@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { X, Edit2, Trash2 } from "lucide-react";
+import { mapTower } from "../utils/Utils.js";
 
-const StationInfoPanel = ({ station, onClose }) => {
+const StationInfoPanel = ({ station, onClose, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(station);
+  const [formData, setFormData] = useState({ ...station });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
@@ -17,9 +18,37 @@ const StationInfoPanel = ({ station, onClose }) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    console.log("Saved station:", formData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const payload = {
+        ...formData,
+        averageSignal: parseInt(formData.signal, 10),
+        range: parseInt(formData.range, 10),
+        lat: parseFloat(formData.lat),
+        lon: parseFloat(formData.lon),
+      };
+
+      const res = await fetch(`http://localhost:8080/api/towers/${station.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        throw new Error("Cập nhật thất bại");
+      }
+
+      const updatedStation  = await res.json();
+      console.log("Updated:", updatedStation );
+
+      setIsEditing(false);
+      onUpdate(mapTower(updatedStation)); // Gửi station mới về cha
+    } catch (error) {
+      console.error(error);
+      alert("Có lỗi khi cập nhật trạm!");
+    }
   };
 
   const handleCancel = () => {
@@ -47,16 +76,16 @@ const StationInfoPanel = ({ station, onClose }) => {
   };
 
   return (
-    <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-4 max-w-sm z-[1000]">
+    <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-4 w-[220px] z-[1000]">
       <div className="flex items-center justify-between mb-3">
         {isEditing ? (
           <input
             className="font-bold text-lg border px-2 py-1 rounded w-full"
-            value={formData.name}
-            onChange={(e) => handleChange("name", e.target.value)}
+            value={formData.technician}
+            onChange={(e) => handleChange("technician", e.target.value)}
           />
         ) : (
-          <h3 className="font-bold text-lg">{station.name}</h3>
+          <h3 className="font-bold text-lg">{station.technician}</h3>
         )}
         <div className="flex items-center space-x-2 ml-2">
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -125,18 +154,30 @@ const StationInfoPanel = ({ station, onClose }) => {
           )}
         </div>
 
-        <div className="flex justify-between">
-          <span>Vị trí:</span>
+        <div className="flex justify-between items-center">
+          <span>Tọa độ:</span>
           {isEditing ? (
-            <input
-              className="border px-2 rounded w-1/2"
-              value={formData.location}
-              onChange={(e) => handleChange("location", e.target.value)}
-            />
+            <div className="flex gap-2 w-1/2">
+              <input
+                placeholder="Lat"
+                className="border px-2 rounded w-1/2"
+                value={formData.lat || ""}
+                onChange={(e) => handleChange("lat", e.target.value)}
+              />
+              <input
+                placeholder="Lon"
+                className="border px-2 rounded w-1/2"
+                value={formData.lon || ""}
+                onChange={(e) => handleChange("lon", e.target.value)}
+              />
+            </div>
           ) : (
-            <span className="font-medium text-right">{station.location}</span>
+            <span className="font-medium text-right">
+              [{station.lat}, {station.lon}]
+            </span>
           )}
         </div>
+
         <div className="flex justify-between">
           <span>Range:</span>
           {isEditing ? (
@@ -196,7 +237,7 @@ const StationInfoPanel = ({ station, onClose }) => {
                 onClick={() => {
                   console.log("Xóa trạm:", station.id);
                   setShowDeleteConfirm(false);
-                  onClose(); // đóng panel nếu cần
+                  onClose();
                 }}
                 className="px-4 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600"
               >

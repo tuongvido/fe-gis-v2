@@ -11,12 +11,13 @@ function App() {
       <Routes>
         {/* Các route dùng layout chung */}
         <Route path="/" element={<MainLayout />}>
+          <Route index element={<HomePage />} /> {/* path="/" */}
           <Route path="home" element={<HomePage />} />
           <Route path="stations" element={<StationsPage />} />
           <Route path="stats" element={<StatsPage />} />
         </Route>
 
-        {/* Route riêng (ví dụ: login không cần layout) */}
+        {/* Route riêng không dùng layout */}
         <Route path="/login" element={<LoginPage />} />
       </Routes>
     </BrowserRouter>

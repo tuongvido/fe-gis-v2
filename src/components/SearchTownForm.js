@@ -2,11 +2,25 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { DATA_BY_STATUS, DISTRICTS, STATION_TYPES } from "../constants/options";
 
-function SearchTownForm() {
+function SearchTownForm({ onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [status, setStatus] = useState("");
   const [district, setDistrict] = useState("");
   const [stationType, setStationType] = useState("");
+
+  const handleSearch = () => {
+    const dto = {
+      status: parseInt(status),
+      districtId: parseInt(district),
+      radioType: stationType,
+      pageDto: {
+        pageNumber: 0,
+        pageSize: 100,
+      },
+    };
+    console.log(dto)
+    onSearch(dto);
+  };
 
   return (
     <>
@@ -37,9 +51,7 @@ function SearchTownForm() {
         <div className="p-4 space-y-4">
           {/* Trạng thái */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Trạng thái
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
@@ -55,9 +67,7 @@ function SearchTownForm() {
 
           {/* Quận */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Quận
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Quận</label>
             <select
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
@@ -73,9 +83,7 @@ function SearchTownForm() {
 
           {/* Loại trạm */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Loại trạm
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Loại trạm</label>
             <select
               value={stationType}
               onChange={(e) => setStationType(e.target.value)}
@@ -87,6 +95,16 @@ function SearchTownForm() {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Nút tìm kiếm */}
+          <div className="pt-2">
+            <button
+              onClick={handleSearch}
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
+            >
+              Tìm kiếm
+            </button>
           </div>
         </div>
       </div>

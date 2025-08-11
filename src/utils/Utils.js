@@ -28,3 +28,23 @@ export const getClassColor = (status) => {
       return "bg-gray-100 text-gray-800";
   }
 };
+
+// Mapping 1 object
+export function mapTower(item) {
+  return {
+    ...item,
+    name: item.name || `Cell ${item.cell}`,
+    status: item.status || "ONLINE",
+    signal: item.averageSignal ?? "N/A",
+    type: item.radio || "Unknown",
+    coordinates: [item.lat, item.lon],
+    location: `Lat: ${item.lat}, Lon: ${item.lon}`,
+    technician: item.technician || "Chưa rõ",
+    phone: item.phone || "",
+  };
+}
+
+// Mapping array
+export function mapTowerDatas(array) {
+  return array.map(mapTower);
+}

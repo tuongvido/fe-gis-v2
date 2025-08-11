@@ -8,48 +8,50 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import greenMarkerIcon from "@vectorial1024/leaflet-color-markers/img/marker-icon-2x-green.png";
 import { getStatusColor } from "../utils/Utils.js";
+import { searchTowers } from "../api/towerService";
 
 const HomePage = () => {
+  const initialSearchDto = {
+    status: -1,
+    districtId: -1,
+    radioType: null,
+    pageDto: {
+      pageNumber: 0,
+      pageSize: 100,
+    },
+  };
+
   const [selectedStation, setSelectedStation] = useState(null);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchDto, setSearchDto] = useState(initialSearchDto);
+
+  const handleSearch = (dtoFromChild) => {
+    setSearchDto(dtoFromChild);
+  };
 
   // Initialize map
   useEffect(() => {
-    if (selectedStation && mapInstanceRef.current) {
-      // Find the marker for selected station
-      const stationMarker = markersRef.current.find((m) => m.station.id === selectedStation.id);
-      if (stationMarker) {
-        // Pan to station location
-        mapInstanceRef.current.setView(selectedStation.coordinates, 12);
-        // Open popup
-        stationMarker.marker.openPopup();
-      }
+    // if (selectedStation && mapInstanceRef.current) {
+    //   // Find the marker for selected station
+    //   const stationMarker = markersRef.current.find((m) => m.station.id === selectedStation.id);
+    //   if (stationMarker) {
+    //     // Pan to station location
+    //     mapInstanceRef.current.setView(selectedStation.coordinates, 12);
+    //     // Open popup
+    //     stationMarker.marker.openPopup();
+    //   }
+    // }
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
     }
-    axios
-      .get("http://localhost:8080/api/towers")
-      .then((res) => {
-        const stations = res.data.slice(0, 200).map((item) => ({
-          id: item.id,
-          name: item.name || `Cell ${item.cell}`,
-          mcc: item.mcc,
-          mnc: item.mnc,
-          area: item.area,
-          cell: item.cell,
-          net: item.net,
-          range: item.range,
-          samples: item.samples,
-          status: item.status || "ONLINE", // fallback nếu không có
-          signal: item.averageSignal ?? "N/A",
-          type: item.radio || "Unknown",
-          coordinates: [item.lat, item.lon],
-          location: `Lat: ${item.lat}, Lon: ${item.lon}`,
-          technician: item.technician || "Chưa rõ",
-          phone: item.phone || "",
-        }));
-        console.log(stations)
+    searchTowers(searchDto)
+      .then((data) => {
+        const stations = data;
+        console.log(stations);
         // Load Leaflet JS
         const script = document.createElement("script");
         script.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
@@ -90,7 +92,13 @@ const HomePage = () => {
               shadowSize: [41, 41],
             });
 
-            const generateGradientCircles = (center, baseColor = "#3f51b5", range = 400, steps = 6, maxOpacity = 0.1) => {
+            const generateGradientCircles = (
+              center,
+              baseColor = "#3f51b5",
+              range = 400,
+              steps = 6,
+              maxOpacity = 0.1
+            ) => {
               const circles = [];
 
               for (let i = 1; i <= steps; i++) {
@@ -106,10 +114,10 @@ const HomePage = () => {
             };
 
             const circles = [
-              { radius: 0.2, color: 'rgba(145, 190, 238, 0.5)' },
-              { radius: 0.5, color: 'rgba(145, 190, 238, 0.5)' },
-              { radius: 0.8, color: 'rgba(145, 190, 238, 0.5)' },
-              { radius: 1, color: 'rgba(145, 190, 238, 0.5)' },
+              { radius: 0.2, color: "rgba(145, 190, 238, 0.5)" },
+              { radius: 0.5, color: "rgba(145, 190, 238, 0.5)" },
+              { radius: 0.8, color: "rgba(145, 190, 238, 0.5)" },
+              { radius: 1, color: "rgba(145, 190, 238, 0.5)" },
             ];
 
             stations.forEach((station) => {
@@ -122,7 +130,7 @@ const HomePage = () => {
               circles.forEach((c) => {
                 window.L.circle(station.coordinates, {
                   radius: station.range * c.radius,
-                  color: 'transparent',
+                  color: "transparent",
                   fillColor: c.color,
                   fillOpacity: 1,
                   stroke: false,
@@ -131,19 +139,16 @@ const HomePage = () => {
               });
             });
 
-
-
             // Add markers for all base stations
             stations.forEach((station) => {
               const marker = window.L.marker(station.coordinates, {
                 icon: greenIcon,
               }).addTo(map);
 
-
               circles.forEach((c) => {
                 window.L.circle(station.coordinates, {
                   radius: station.range * c.radius,
-                  color: 'transparent',
+                  color: "transparent",
                   fillColor: c.color,
                   fillOpacity: 1,
                   stroke: false,
@@ -197,9 +202,11 @@ const HomePage = () => {
           markersRef.current = [];
         };
       })
-      .catch((error) => console.error(error));
+      .catch((err) => {
+        console.error("Error fetching towers:", err);
+      });
     if (!mapRef.current) return;
-  }, []);
+  }, [searchDto]);
 
   const getSignalColor = (signal) => {
     if (signal >= 90) return "text-green-600";
@@ -211,10 +218,11 @@ const HomePage = () => {
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div
-        className={`${sidebarOpen ? "w-80" : "w-0"
-          } bg-white shadow-lg flex flex-col transition-all duration-300 overflow-hidden`}
+        className={`${
+          sidebarOpen ? "w-80" : "w-0"
+        } bg-white shadow-lg flex flex-col transition-all duration-300 overflow-hidden`}
       >
-        {sidebarOpen && <SearchTownForm />}
+        {sidebarOpen && <SearchTownForm onSearch={handleSearch} />}
       </div>
       {/* Toggle Button */}
       <button
@@ -249,8 +257,9 @@ const HomePage = () => {
           <StationInfoPanel
             station={selectedStation}
             onClose={() => setSelectedStation(null)}
-            onEdit={(station) => console.log("Edit", station)}
-            onDelete={(station) => console.log("Delete", station)}
+            onUpdate={(updated) => {
+              setSelectedStation(updated); // cập nhật panel đang xem
+            }}
           />
         </div>
       </div>

@@ -1,8 +1,36 @@
 // components/EditStationModal.js
-import React from "react";
 
 const EditStationModal = ({ open, onClose, station, onChange, onSave }) => {
   if (!open || !station) return null;
+
+  const handleSave = async () => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/towers/${station.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(station),
+      });
+
+      if (!res.ok) {
+        throw new Error("Cập nhật thất bại");
+      }
+
+      const updated = await res.json();
+      console.log("Updated:", updated);
+
+      // Gọi lại hàm onSave nếu bạn muốn cập nhật state ở component cha
+      if (onSave) {
+        onSave(updated);
+      }
+
+      onClose();
+    } catch (error) {
+      console.error(error);
+      alert("Có lỗi khi cập nhật trạm!");
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -92,9 +120,7 @@ const EditStationModal = ({ open, onClose, station, onChange, onSave }) => {
               onChange={(e) =>
                 onChange(
                   "coordinates",
-                  e.target.value
-                    .split(",")
-                    .map((v) => parseFloat(v.trim()))
+                  e.target.value.split(",").map((v) => parseFloat(v.trim()))
                 )
               }
               className="w-full border p-2 rounded"
@@ -104,16 +130,10 @@ const EditStationModal = ({ open, onClose, station, onChange, onSave }) => {
         </div>
 
         <div className="mt-6 flex justify-end space-x-3">
-          <button
-            onClick={onClose}
-            className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded"
-          >
+          <button onClick={onClose} className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded">
             Hủy
           </button>
-          <button
-            onClick={onSave}
-            className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded"
-          >
+          <button onClick={handleSave} className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded">
             Xác nhận
           </button>
         </div>
