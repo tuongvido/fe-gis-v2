@@ -71,8 +71,8 @@ const EditStationModal = ({ open, onClose, station, onChange, onSave }) => {
             <label className="text-sm">Loại</label>
             <input
               type="text"
-              value={station.type}
-              onChange={(e) => onChange("type", e.target.value)}
+              value={station.radio}
+              onChange={(e) => onChange("radio", e.target.value)}
               className="w-full border p-2 rounded"
             />
           </div>

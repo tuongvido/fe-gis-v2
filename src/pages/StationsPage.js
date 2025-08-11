@@ -106,7 +106,7 @@ const StationsPage = () => {
                 </td>
                 <td className="px-4 py-2">{station.location}</td>
                 <td className="px-4 py-2">{station.signal}</td>
-                <td className="px-4 py-2">{station.type}</td>
+                <td className="px-4 py-2">{station.radio}</td>
                 <td className="px-4 py-2">{station.phone}</td>
                 <td className="px-4 py-2">{station.range} m</td>
                 <td className="px-4 py-2 space-x-2">

@@ -25,7 +25,7 @@ const StationInfoPanel = ({ station, onClose, onUpdate }) => {
         averageSignal: parseInt(formData.signal, 10),
         range: parseInt(formData.range, 10),
         lat: parseFloat(formData.lat),
-        lon: parseFloat(formData.lon),
+        lon: parseFloat(formData.lon)
       };
 
       const res = await fetch(`http://localhost:8080/api/towers/${station.id}`, {
@@ -95,7 +95,8 @@ const StationInfoPanel = ({ station, onClose, onUpdate }) => {
       </div>
 
       <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
+        
+        {/* <div className="flex justify-between">
           <span>Kỹ thuật viên:</span>
           {isEditing ? (
             <input
@@ -106,7 +107,7 @@ const StationInfoPanel = ({ station, onClose, onUpdate }) => {
           ) : (
             <span className="font-medium">{station.technician}</span>
           )}
-        </div>
+        </div> */}
 
         <div className="flex justify-between">
           <span>Trạng thái:</span>
@@ -146,11 +147,23 @@ const StationInfoPanel = ({ station, onClose, onUpdate }) => {
           {isEditing ? (
             <input
               className="border px-2 rounded w-1/2"
-              value={formData.type}
-              onChange={(e) => handleChange("type", e.target.value)}
+              value={formData.radio}
+              onChange={(e) => handleChange("radio", e.target.value)}
             />
           ) : (
-            <span className="font-medium">{station.type}</span>
+            <span className="font-medium">{station.radio}</span>
+          )}
+        </div>
+          <div className="flex justify-between">
+          <span>Quận:</span>
+          {isEditing ? (
+            <input
+              className="border px-2 rounded w-1/2"
+              value={formData.nameDistrict}
+              onChange={(e) => handleChange("nameDistrict", e.target.value)}
+            />
+          ) : (
+            <span className="font-medium">{station.nameDistrict}</span>
           )}
         </div>
 

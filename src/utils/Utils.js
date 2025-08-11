@@ -36,11 +36,11 @@ export function mapTower(item) {
     name: item.name || `Cell ${item.cell}`,
     status: item.status || "ONLINE",
     signal: item.averageSignal ?? "N/A",
-    type: item.radio || "Unknown",
+    radio: item.radio || "Unknown",
     coordinates: [item.lat, item.lon],
     location: `Lat: ${item.lat}, Lon: ${item.lon}`,
-    technician: item.technician || "Chưa rõ",
     phone: item.phone || "",
+    nameDistrict: item.nameDistrict
   };
 }
 

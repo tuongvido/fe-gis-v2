@@ -126,17 +126,17 @@ const HomePage = () => {
                 icon: createMarkerIcon(station.status),
               }).addTo(map);
 
-              // Vẽ các circle gradient
-              circles.forEach((c) => {
-                window.L.circle(station.coordinates, {
-                  radius: station.range * c.radius,
-                  color: "transparent",
-                  fillColor: c.color,
-                  fillOpacity: 1,
-                  stroke: false,
-                  interactive: false,
-                }).addTo(map);
-              });
+              // // Vẽ các circle gradient
+              // circles.forEach((c) => {
+              //   window.L.circle(station.coordinates, {
+              //     radius: station.range * c.radius,
+              //     color: "transparent",
+              //     fillColor: c.color,
+              //     fillOpacity: 1,
+              //     stroke: false,
+              //     interactive: false,
+              //   }).addTo(map);
+              // });
             });
 
             // Add markers for all base stations
@@ -172,7 +172,7 @@ const HomePage = () => {
               //         }">${station.status}</span>
               //       </div>
               //       <div><strong>Tín hiệu:</strong> ${station.signal}%</div>
-              //       <div><strong>Loại:</strong> ${station.type}</div>
+              //       <div><strong>Loại:</strong> ${station.radio}</div>
               //       <div><strong>Vị trí:</strong> ${station.location}</div>
               //     </div>
               //   </div>
