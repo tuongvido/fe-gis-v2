@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { X, Edit2, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X} from "lucide-react";
 import { mapTower } from "../utils/Utils.js";
+import { editTower, deleteTower } from "../api/towerService";
 
-const StationInfoPanel = ({ station, onClose, onUpdate }) => {
+const StationInfoPanel = ({ station, onClose, onUpdate, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ ...station });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -19,36 +20,34 @@ const StationInfoPanel = ({ station, onClose, onUpdate }) => {
   };
 
   const handleSave = async () => {
-    try {
-      const payload = {
-        ...formData,
-        averageSignal: parseInt(formData.signal, 10),
-        range: parseInt(formData.range, 10),
-        lat: parseFloat(formData.lat),
-        lon: parseFloat(formData.lon)
-      };
+    const payload = {
+      ...formData,
+      averageSignal: parseInt(formData.signal, 10),
+      range: parseInt(formData.range, 10),
+      lat: parseFloat(formData.lat),
+      lon: parseFloat(formData.lon),
+    };
 
-      const res = await fetch(`http://localhost:8080/api/towers/${station.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+    await editTower(payload)
+      .then((res) => {
+        setIsEditing(false);
+        onUpdate(mapTower(res));
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Có lỗi khi cập nhật trạm!");
       });
+  };
 
-      if (!res.ok) {
-        throw new Error("Cập nhật thất bại");
-      }
-
-      const updatedStation  = await res.json();
-      console.log("Updated:", updatedStation );
-
-      setIsEditing(false);
-      onUpdate(mapTower(updatedStation)); // Gửi station mới về cha
-    } catch (error) {
-      console.error(error);
-      alert("Có lỗi khi cập nhật trạm!");
-    }
+  const handleDelete = async () => {
+    await deleteTower(station)
+      .then((res) => {
+        onDelete(station.id);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Có lỗi khi cập nhật trạm!");
+      });
   };
 
   const handleCancel = () => {
@@ -95,7 +94,6 @@ const StationInfoPanel = ({ station, onClose, onUpdate }) => {
       </div>
 
       <div className="space-y-2 text-sm">
-        
         {/* <div className="flex justify-between">
           <span>Kỹ thuật viên:</span>
           {isEditing ? (
@@ -154,7 +152,7 @@ const StationInfoPanel = ({ station, onClose, onUpdate }) => {
             <span className="font-medium">{station.radio}</span>
           )}
         </div>
-          <div className="flex justify-between">
+        <div className="flex justify-between">
           <span>Quận:</span>
           {isEditing ? (
             <input
@@ -248,7 +246,7 @@ const StationInfoPanel = ({ station, onClose, onUpdate }) => {
               </button>
               <button
                 onClick={() => {
-                  console.log("Xóa trạm:", station.id);
+                  handleDelete();
                   setShowDeleteConfirm(false);
                   onClose();
                 }}

@@ -1,17 +1,24 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import { Home, List, BarChart2, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
-
-const menuItems = [
-  { label: "Trang chủ", icon: <Home className="w-5 h-5" />, to: "/home" },
-  { label: "Danh sách trạm", icon: <List className="w-5 h-5" />, to: "/stations" },
-  { label: "Thống kê", icon: <BarChart2 className="w-5 h-5" />, to: "/stats" },
-  { label: "Đăng xuất", icon: <LogOut className="w-5 h-5" />, to: "/login" },
-];
 
 const SidebarMenu = () => {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const menuItems = [
+    { label: "Trang chủ", icon: <Home className="w-5 h-5" />, to: "/home" },
+    { label: "Danh sách trạm", icon: <List className="w-5 h-5" />, to: "/stations" },
+    { label: "Thống kê", icon: <BarChart2 className="w-5 h-5" />, to: "/stats" },
+    { label: "Đăng xuất", icon: <LogOut className="w-5 h-5" />, to: "/logout" }, // to tạm để bắt event
+  ];
+
+  const handleLogout = () => {
+    Cookies.remove("token"); // Xóa token
+    navigate("/login");
+  };
 
   return (
     <div
@@ -33,17 +40,27 @@ const SidebarMenu = () => {
         <ul className="space-y-1 px-2 mt-4">
           {menuItems.map((item, idx) => (
             <li key={idx}>
-              <Link
-                to={item.to}
-                className={`flex items-center gap-3 px-4 py-2 rounded-md transition ${
-                  location.pathname === item.to
-                    ? "bg-blue-100 text-blue-600 font-semibold"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
-                }`}
-              >
-                {item.icon}
-                {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}
-              </Link>
+              {item.label === "Đăng xuất" ? (
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-3 px-4 py-2 rounded-md text-gray-700 hover:text-red-600 hover:bg-red-50 transition"
+                >
+                  {item.icon}
+                  {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}
+                </button>
+              ) : (
+                <Link
+                  to={item.to}
+                  className={`flex items-center gap-3 px-4 py-2 rounded-md transition ${
+                    location.pathname === item.to
+                      ? "bg-blue-100 text-blue-600 font-semibold"
+                      : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                  }`}
+                >
+                  {item.icon}
+                  {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}
+                </Link>
+              )}
             </li>
           ))}
         </ul>
