@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import SearchTownForm from "../components/SearchTownForm.js";
 import StationInfoPanel from "../components/StationInfoPanel.js";
+import EditStationModal from "../components/EditStationModal";
 import Spinner from "../components/Spinner.js";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -28,6 +29,7 @@ const HomePage = () => {
   const mapInstanceRef = useRef(null);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [searchDto, setSearchDto] = useState(initialSearchDto);
 
   // Tạo icon màu xanh lá
@@ -66,19 +68,14 @@ const HomePage = () => {
     });
     // Hàm tạo icon màu
     const createMarkerIcon = (status) => {
-      const color = getStatusColor(status);
-      const size = mapInstanceRef.current.getZoom() / 1.5;
       return L.divIcon({
         html: `<div style="
-                background-color: ${color};
-                width: ${size}px;
-                height: ${size}px;
-                border-radius: 50%;
-                border: 1px solid white;
+                width: 0px;
+                height: 0px;
               "></div>`,
         className: "custom-marker",
-        iconSize: [size, size],
-        iconAnchor: [(size + 6) / 2, (size + 6) / 2],
+        iconSize: [0, 0],
+        iconAnchor: [0, 0],
       });
     };
 
@@ -91,28 +88,28 @@ const HomePage = () => {
 
     stations.forEach((station) => {
       // Add markers for all base stations
-      // const marker = L.marker(station.coordinates, {
-      //   icon: createMarkerIcon(station.status),
-      // }).addTo(mapInstanceRef.current);
+      const marker = L.marker(station.coordinates, {
+        icon: createMarkerIcon(station.status),
+      }).addTo(mapInstanceRef.current);
 
       const greenMarker = window.L.marker(station.coordinates, {
         icon: greenIcon,
       }).addTo(mapInstanceRef.current);
 
-      // circleStyles.map((c) =>
-      //   L.circle(station.coordinates, {
-      //     radius: station.range * c.radius,
-      //     color: "transparent",
-      //     fillColor: c.color,
-      //     fillOpacity: 1,
-      //     stroke: false,
-      //     interactive: false,
-      //   }).addTo(mapInstanceRef.current)
-      // );
+      circleStyles.map((c) =>
+        L.circle(station.coordinates, {
+          radius: station.range * c.radius,
+          color: "transparent",
+          fillColor: c.color,
+          fillOpacity: 1,
+          stroke: false,
+          interactive: false,
+        }).addTo(mapInstanceRef.current)
+      );
 
-      // marker.on("click", () => {
-      //   setSelectedStation(station);
-      // });
+      marker.on("click", () => {
+        setSelectedStation(station);
+      });
       greenMarker.on("click", () => {
         setSelectedStation(station);
       });
@@ -175,23 +172,29 @@ const HomePage = () => {
           <StationInfoPanel
             station={selectedStation}
             onClose={() => setSelectedStation(null)}
-            onUpdate={(updated) => {
-              // cập nhật panel đang xem
-              setSelectedStation(updated);
-
-              // Cập nhật list stations
-              setStations((prev) => prev.map((station) => (station.id === updated.id ? updated : station)));
+            onUpdate={() => {
+              setShowEditModal(true)
             }}
             onDelete={(deletedId) => {
               setSelectedStation(null);
               setStations((prev) => prev.filter((station) => station.id !== deletedId));
             }}
           />
+
+          {/* Modal: Edit Station */}
+          {showEditModal && (
+            <EditStationModal
+              onClose={() => setShowEditModal(false)}
+              station={selectedStation}
+              onUpdate={(updated) => {
+                setSelectedStation(updated);
+                setStations((prev) => prev.map((station) => (station.id === updated.id ? updated : station)));
+              }}
+            />
+          )}
         </div>
       </div>
-      <div className="relative h-screen">
-        {loading && <Spinner />}
-      </div>
+      <div className="relative h-screen">{loading && <Spinner />}</div>
     </div>
   );
 };

@@ -38,7 +38,7 @@ const EditStationModal = ({ onClose, station, onUpdate }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-40"
       onClick={onClose} // click nền đen để đóng
     >
       <div
@@ -73,6 +73,7 @@ const EditStationModal = ({ onClose, station, onUpdate }) => {
             >
               <option value="ONLINE">ONLINE</option>
               <option value="OFFLINE">OFFLINE</option>
+              <option value="OFFLINE">MAINTENANCE</option>
             </select>
           </div>
           <div>
