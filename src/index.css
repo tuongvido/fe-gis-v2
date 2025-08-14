@@ -7,6 +7,19 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.swal2-confirm {
+  background-color: #3085d6 !important; /* màu xanh */
+  color: white !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 1rem !important;
+  border-radius: 4px !important;
+}
+
+.swal2-confirm:hover {
+  background-color: #2563eb !important; /* màu xanh đậm khi hover */
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

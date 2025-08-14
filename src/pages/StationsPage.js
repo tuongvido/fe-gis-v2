@@ -1,18 +1,45 @@
 // pages/StationsPage.js
-import React, { useState } from "react";
-import { baseStations } from "../constants/constants.js";
+import { useState, useEffect } from "react";
 import EditStationModal from "../components/EditStationModal";
 import DeleteStationModal from "../components/DeleteStationModal";
 import ImportModal from "../components/ImportModal.js";
+import { searchTowers } from "../api/towerService";
+import { getClassColor } from "../utils/Utils.js";
+import { deleteTower } from "../api/towerService";
+import { showSuccess, showError } from "../components/AlertPopup";
 
 const StationsPage = () => {
-  const [stations, setStations] = useState(baseStations);
+  const initialSearchDto = {
+    status: -1,
+    districtId: -1,
+    radioType: null,
+    pageDto: {
+      pageNumber: 0,
+      pageSize: 100,
+    },
+  };
+
+  const [searchDto, setSearchDto] = useState(initialSearchDto);
+  const [stations, setStations] = useState([]);
   const [selectedStation, setSelectedStation] = useState(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [fileUploaded, setFileUploaded] = useState(false);
   const [importPreview, setImportPreview] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    searchTowers(searchDto)
+      .then((data) => {
+        setStations(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching towers:", err);
+        setLoading(false);
+      });
+  }, [searchDto]);
 
   const handleEdit = (station) => {
     setSelectedStation({ ...station });
@@ -24,17 +51,16 @@ const StationsPage = () => {
     setShowDeleteModal(true);
   };
 
-  const handleChange = (field, value) => {
-    setSelectedStation((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleSave = () => {
-    setStations((prev) => prev.map((s) => (s.id === selectedStation.id ? selectedStation : s)));
-    setShowEditModal(false);
-  };
-
-  const handleConfirmDelete = () => {
-    setStations((prev) => prev.filter((s) => s.id !== selectedStation.id));
+  const handleConfirmDelete = async () => {
+    await deleteTower(selectedStation)
+      .then((res) => {
+        showSuccess("Thành công");
+        setStations((prev) => prev.filter((s) => s.id !== selectedStation.id));
+      })
+      .catch((err) => {
+        console.error(err);
+        showError("Có lỗi xảy ra");
+      });
     setShowDeleteModal(false);
   };
 
@@ -80,13 +106,12 @@ const StationsPage = () => {
           <thead className="bg-gray-100">
             <tr>
               <th className="px-4 py-2 text-left">Tên trạm</th>
-              <th className="px-4 py-2 text-left">Kỹ thuật viên</th>
               <th className="px-4 py-2 text-left">Trạng thái</th>
-              <th className="px-4 py-2 text-left">Vị trí</th>
               <th className="px-4 py-2 text-left">Tín hiệu</th>
               <th className="px-4 py-2 text-left">Loại</th>
-              <th className="px-4 py-2 text-left">Số điện thoại</th>
-              <th className="px-4 py-2 text-left">Tầm phủ</th>
+              <th className="px-4 py-2 text-left">Quận</th>
+              <th className="px-4 py-2 text-left">Tầm phủ (m)</th>
+              <th className="px-4 py-2 text-left">Tọa độ</th>
               <th className="px-4 py-2 text-left">Hành động</th>
             </tr>
           </thead>
@@ -94,21 +119,18 @@ const StationsPage = () => {
             {stations.map((station) => (
               <tr key={station.id} className="border-t hover:bg-gray-50">
                 <td className="px-4 py-2">{station.name}</td>
-                <td className="px-4 py-2">{station.technician}</td>
                 <td className="px-4 py-2">
-                  <span
-                    className={`px-2 py-1 rounded text-white text-sm ${
-                      station.status === "ONLINE" ? "bg-green-500" : "bg-red-500"
-                    }`}
-                  >
+                  <span className={`px-2 py-1 rounded text-white text-sm ${getClassColor(station.status)}`}>
                     {station.status}
                   </span>
                 </td>
-                <td className="px-4 py-2">{station.location}</td>
-                <td className="px-4 py-2">{station.signal}</td>
+                <td className="px-4 py-2">{station.averageSignal}</td>
                 <td className="px-4 py-2">{station.radio}</td>
-                <td className="px-4 py-2">{station.phone}</td>
-                <td className="px-4 py-2">{station.range} m</td>
+                <td className="px-4 py-2">{station.nameDistrict}</td>
+                <td className="px-4 py-2">{station.range}</td>
+                <td className="px-4 py-2">
+                  [{station.lat}, {station.lon}]
+                </td>
                 <td className="px-4 py-2 space-x-2">
                   <button className="text-blue-600 hover:underline" onClick={() => handleEdit(station)}>
                     Sửa
@@ -124,13 +146,16 @@ const StationsPage = () => {
       </div>
 
       {/* Modal: Edit Station */}
-      <EditStationModal
-        open={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        station={selectedStation}
-        onChange={handleChange}
-        onSave={handleSave}
-      />
+      {showEditModal && (
+        <EditStationModal
+          onClose={() => setShowEditModal(false)}
+          station={selectedStation}
+          onUpdate={(updated) => {
+            setSelectedStation(updated);
+            setStations((prev) => prev.map((station) => (station.id === updated.id ? updated : station)));
+          }}
+        />
+      )}
 
       {/* Modal: Confirm Delete */}
       <DeleteStationModal

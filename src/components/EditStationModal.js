@@ -1,40 +1,57 @@
 // components/EditStationModal.js
+import { useState, useEffect } from "react";
+import { mapTower } from "../utils/Utils.js";
+import { editTower } from "../api/towerService";
+import { showSuccess, showError } from "../components/AlertPopup";
 
-const EditStationModal = ({ open, onClose, station, onChange, onSave }) => {
-  if (!open || !station) return null;
+const EditStationModal = ({ onClose, station, onUpdate }) => {
+  const [formData, setFormData] = useState({ ...station });
+
+  useEffect(() => {
+    setFormData(station);
+  }, []);
+
+  if (!station) return null;
 
   const handleSave = async () => {
-    try {
-      const res = await fetch(`http://localhost:8080/api/towers/${station.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(station),
+    const payload = {
+      ...formData,
+      range: parseInt(formData.range, 10),
+      lat: parseFloat(formData.lat),
+      lon: parseFloat(formData.lon),
+    };
+
+    await editTower(payload)
+      .then((res) => {
+        onUpdate(mapTower(res));
+        showSuccess("Thành công");
+      })
+      .catch((err) => {
+        console.error(err);
+        showError("Có lỗi xảy ra");
       });
+  };
 
-      if (!res.ok) {
-        throw new Error("Cập nhật thất bại");
-      }
-
-      const updated = await res.json();
-      console.log("Updated:", updated);
-
-      // Gọi lại hàm onSave nếu bạn muốn cập nhật state ở component cha
-      if (onSave) {
-        onSave(updated);
-      }
-
-      onClose();
-    } catch (error) {
-      console.error(error);
-      alert("Có lỗi khi cập nhật trạm!");
-    }
+  const onChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="bg-white p-6 w-full max-w-xl rounded shadow">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+      onClick={onClose} // click nền đen để đóng
+    >
+      <div
+        className="bg-white p-6 w-full max-w-xl rounded shadow relative"
+        onClick={(e) => e.stopPropagation()} // chặn click bên trong
+      >
+        {/* Nút X đóng */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-lg font-bold"
+        >
+          &times;
+        </button>
         <h2 className="text-lg font-semibold mb-4">Chỉnh sửa trạm</h2>
 
         <div className="grid grid-cols-2 gap-4">
@@ -42,24 +59,15 @@ const EditStationModal = ({ open, onClose, station, onChange, onSave }) => {
             <label className="text-sm">Tên trạm</label>
             <input
               type="text"
-              value={station.name}
+              value={formData.name}
               onChange={(e) => onChange("name", e.target.value)}
-              className="w-full border p-2 rounded"
-            />
-          </div>
-          <div>
-            <label className="text-sm">Kỹ thuật viên</label>
-            <input
-              type="text"
-              value={station.technician}
-              onChange={(e) => onChange("technician", e.target.value)}
               className="w-full border p-2 rounded"
             />
           </div>
           <div>
             <label className="text-sm">Trạng thái</label>
             <select
-              value={station.status}
+              value={formData.status}
               onChange={(e) => onChange("status", e.target.value)}
               className="w-full border p-2 rounded"
             >
@@ -71,7 +79,7 @@ const EditStationModal = ({ open, onClose, station, onChange, onSave }) => {
             <label className="text-sm">Loại</label>
             <input
               type="text"
-              value={station.radio}
+              value={formData.radio}
               onChange={(e) => onChange("radio", e.target.value)}
               className="w-full border p-2 rounded"
             />
@@ -80,26 +88,17 @@ const EditStationModal = ({ open, onClose, station, onChange, onSave }) => {
             <label className="text-sm">Tín hiệu</label>
             <input
               type="number"
-              value={station.signal}
-              onChange={(e) => onChange("signal", Number(e.target.value))}
+              value={formData.averageSignal}
+              onChange={(e) => onChange("averageSignal", Number(e.target.value))}
               className="w-full border p-2 rounded"
             />
           </div>
           <div>
-            <label className="text-sm">Số điện thoại</label>
+            <label className="text-sm">Quận</label>
             <input
               type="text"
-              value={station.phone}
-              onChange={(e) => onChange("phone", e.target.value)}
-              className="w-full border p-2 rounded"
-            />
-          </div>
-          <div className="col-span-2">
-            <label className="text-sm">Vị trí</label>
-            <input
-              type="text"
-              value={station.location}
-              onChange={(e) => onChange("location", e.target.value)}
+              value={formData.nameDistrict}
+              onChange={(e) => onChange("nameDistrict", e.target.value)}
               className="w-full border p-2 rounded"
             />
           </div>
@@ -107,25 +106,35 @@ const EditStationModal = ({ open, onClose, station, onChange, onSave }) => {
             <label className="text-sm">Tầm phủ (m)</label>
             <input
               type="number"
-              value={station.range}
+              value={formData.range}
               onChange={(e) => onChange("range", Number(e.target.value))}
               className="w-full border p-2 rounded"
             />
           </div>
           <div>
-            <label className="text-sm">Tọa độ (lat, lon)</label>
-            <input
-              type="text"
-              value={station.coordinates?.join(", ") || ""}
-              onChange={(e) =>
-                onChange(
-                  "coordinates",
-                  e.target.value.split(",").map((v) => parseFloat(v.trim()))
-                )
-              }
-              className="w-full border p-2 rounded"
-              placeholder="10.76, 106.70"
-            />
+            <label className="text-sm">Tọa độ</label>
+            <div className="flex gap-4">
+              {/* Lat */}
+              <div className="flex items-center gap-2 flex-1">
+                <label className="text-xs text-gray-600 w-8">Lat</label>
+                <input
+                  type="text"
+                  value={formData.lat || ""}
+                  onChange={(e) => onChange("lat", e.target.value)}
+                  className="flex-1 border rounded p-2"
+                />
+              </div>
+              {/* Lon */}
+              <div className="flex items-center gap-2 flex-1">
+                <label className="text-xs text-gray-600 w-8">Lon</label>
+                <input
+                  type="text"
+                  value={formData.lon || ""}
+                  onChange={(e) => onChange("lon", e.target.value)}
+                  className="flex-1 border rounded p-2"
+                />
+              </div>
+            </div>
           </div>
         </div>
 

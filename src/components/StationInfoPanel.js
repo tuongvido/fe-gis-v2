@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { X} from "lucide-react";
 import { mapTower } from "../utils/Utils.js";
 import { editTower, deleteTower } from "../api/towerService";
+import { showSuccess, showError } from "../components/AlertPopup";
+import { getClassColor } from "../utils/Utils.js";
 
 const StationInfoPanel = ({ station, onClose, onUpdate, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -22,7 +24,6 @@ const StationInfoPanel = ({ station, onClose, onUpdate, onDelete }) => {
   const handleSave = async () => {
     const payload = {
       ...formData,
-      averageSignal: parseInt(formData.signal, 10),
       range: parseInt(formData.range, 10),
       lat: parseFloat(formData.lat),
       lon: parseFloat(formData.lon),
@@ -32,10 +33,11 @@ const StationInfoPanel = ({ station, onClose, onUpdate, onDelete }) => {
       .then((res) => {
         setIsEditing(false);
         onUpdate(mapTower(res));
+        showSuccess("Thành công");
       })
       .catch((err) => {
         console.error(err);
-        alert("Có lỗi khi cập nhật trạm!");
+        showError("Có lỗi xảy ra");
       });
   };
 
@@ -43,29 +45,17 @@ const StationInfoPanel = ({ station, onClose, onUpdate, onDelete }) => {
     await deleteTower(station)
       .then((res) => {
         onDelete(station.id);
+        showSuccess("Thành công");
       })
       .catch((err) => {
         console.error(err);
-        alert("Có lỗi khi cập nhật trạm!");
+        showError("Có lỗi xảy ra");
       });
   };
 
   const handleCancel = () => {
     setFormData(station);
     setIsEditing(false);
-  };
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "ONLINE":
-        return "bg-green-100 text-green-800";
-      case "OFFLINE":
-        return "bg-red-100 text-red-800";
-      case "MAINTENANCE":
-        return "bg-yellow-100 text-yellow-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
   };
 
   const getSignalColorClass = (signal) => {
@@ -80,11 +70,11 @@ const StationInfoPanel = ({ station, onClose, onUpdate, onDelete }) => {
         {isEditing ? (
           <input
             className="font-bold text-lg border px-2 py-1 rounded w-full"
-            value={formData.technician}
+            value={formData.name}
             onChange={(e) => handleChange("technician", e.target.value)}
           />
         ) : (
-          <h3 className="font-bold text-lg">{station.technician}</h3>
+          <h3 className="font-bold text-lg">{station.name}</h3>
         )}
         <div className="flex items-center space-x-2 ml-2">
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
@@ -120,7 +110,7 @@ const StationInfoPanel = ({ station, onClose, onUpdate, onDelete }) => {
               <option value="MAINTENANCE">MAINTENANCE</option>
             </select>
           ) : (
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(station.status)}`}>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getClassColor(station.status)}`}>
               {station.status}
             </span>
           )}
@@ -132,11 +122,11 @@ const StationInfoPanel = ({ station, onClose, onUpdate, onDelete }) => {
             <input
               type="number"
               className="border px-2 rounded w-1/2"
-              value={formData.signal}
-              onChange={(e) => handleChange("signal", e.target.value)}
+              value={formData.averageSignal}
+              onChange={(e) => handleChange("averageSignal", e.target.value)}
             />
           ) : (
-            <span className={`font-medium ${getSignalColorClass(station.signal)}`}>{station.signal}%</span>
+            <span className={`font-medium ${getSignalColorClass(station.averageSignal)}`}>{station.averageSignal}%</span>
           )}
         </div>
 
@@ -190,7 +180,7 @@ const StationInfoPanel = ({ station, onClose, onUpdate, onDelete }) => {
         </div>
 
         <div className="flex justify-between">
-          <span>Range:</span>
+          <span>Tầm phủ:</span>
           {isEditing ? (
             <input
               type="number"

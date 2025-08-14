@@ -91,28 +91,28 @@ const HomePage = () => {
 
     stations.forEach((station) => {
       // Add markers for all base stations
-      const marker = L.marker(station.coordinates, {
-        icon: createMarkerIcon(station.status),
-      }).addTo(mapInstanceRef.current);
+      // const marker = L.marker(station.coordinates, {
+      //   icon: createMarkerIcon(station.status),
+      // }).addTo(mapInstanceRef.current);
 
       const greenMarker = window.L.marker(station.coordinates, {
         icon: greenIcon,
       }).addTo(mapInstanceRef.current);
 
-      circleStyles.map((c) =>
-        L.circle(station.coordinates, {
-          radius: station.range * c.radius,
-          color: "transparent",
-          fillColor: c.color,
-          fillOpacity: 1,
-          stroke: false,
-          interactive: false,
-        }).addTo(mapInstanceRef.current)
-      );
+      // circleStyles.map((c) =>
+      //   L.circle(station.coordinates, {
+      //     radius: station.range * c.radius,
+      //     color: "transparent",
+      //     fillColor: c.color,
+      //     fillOpacity: 1,
+      //     stroke: false,
+      //     interactive: false,
+      //   }).addTo(mapInstanceRef.current)
+      // );
 
-      marker.on("click", () => {
-        setSelectedStation(station);
-      });
+      // marker.on("click", () => {
+      //   setSelectedStation(station);
+      // });
       greenMarker.on("click", () => {
         setSelectedStation(station);
       });
